@@ -19,17 +19,17 @@ class User {
     this.netWorth = 0;
   }
   // Utility Functions
-  updateNetWorth(){
-    let total = 0
+  updateNetWorth() {
+    let total = 0;
     for (let index = 0; index < this.accounts.length; index++) {
-      total = total + this.accounts[index].AccountBalance
+      total = total + this.accounts[index].AccountBalance;
     }
-    this.netWorth = total
-    return this.netWorth
+    this.netWorth = total;
+    return this.netWorth;
   }
 
-  getNetWorth(){
-    return this.netWorth
+  getNetWorth() {
+    return this.netWorth;
   }
 
   static findUser(userId) {
@@ -98,7 +98,7 @@ class User {
       let newAdmin = new User(name, age, gender, true);
       return newAdmin;
     } catch (error) {
-      return error; // TODO;
+      return error;
     }
   }
 
@@ -121,7 +121,7 @@ class User {
       User.allUsers.push(newUser);
       return newUser;
     } catch (error) {
-      return error; // TODO;
+      return error;
     }
   }
 
@@ -166,7 +166,7 @@ class User {
           throw new ValidationError("Invalid Parameter");
       }
     } catch (error) {
-      return error; // TODO;
+      return error;
     }
   }
 
@@ -178,7 +178,7 @@ class User {
       }
       return Bank.newBank(bankName);
     } catch (error) {
-      return error; // TODO;
+      return error;
     }
   }
 
@@ -210,7 +210,7 @@ class User {
           throw new ValidationError("Invalid Parameter");
       }
     } catch (error) {
-      return error; // TODO;
+      return error;
     }
   }
 
@@ -232,6 +232,8 @@ class User {
 
       this.accounts.push(newAccount);
       BankWhereAccountNeedsCreation.accounts.push(newAccount);
+      BankWhereAccountNeedsCreation.updateBankTotal();
+      this.updateNetWorth();
       return this;
     } catch (error) {
       return error;
@@ -275,8 +277,8 @@ class User {
       if (bankAccount == null) {
         throw new NotFoundError("Account not found in Bank");
       }
-      // let bankWhereAccHasToBeAdded = Bank.allBanks[bankAccountIndex]
-      this.updateNetWorth()
+      bankAccount.updateBankTotal();
+      this.updateNetWorth();
       return bankAccount;
     } catch (error) {
       return error;
@@ -308,7 +310,8 @@ class User {
       if (bankAccount == null) {
         throw new NotFoundError("Account not found in Bank");
       }
-      this.updateNetWorth()
+      bankAccount.updateBankTotal();
+      this.updateNetWorth();
       return bankAccount;
     } catch (error) {
       return error;
@@ -348,28 +351,28 @@ class User {
       if (from.AccountBalance - transferAmount < 1000) {
         throw new ValidationError("Insufficent Balance");
       }
-      
-      from.deductAmount(transferAmount, fromAccountNo, toAccountNo)
-      to.addAmount(transferAmount, fromAccountNo, toAccountNo)
 
-      let [bankTotalFrom,fromTotalIndex] = Bank.findBank(from.bankId)
-      let [bankTotalTo,toTotalIndex] = Bank.findBank(to.bankId)
+      from.deductAmount(transferAmount, fromAccountNo, toAccountNo);
+      to.addAmount(transferAmount, fromAccountNo, toAccountNo);
 
-      bankTotalFrom.updateBankTotal()
-      bankTotalTo.updateBankTotal()
+      let [bankTotalFrom, fromTotalIndex] = Bank.findBank(from.bankId);
+      let [bankTotalTo, toTotalIndex] = Bank.findBank(to.bankId);
 
-      let userNetWorthToBeUpdated = User.findUser(to.userId)
+      bankTotalFrom.updateBankTotal();
+      bankTotalTo.updateBankTotal();
 
-      this.updateNetWorth()
-      userNetWorthToBeUpdated.updateNetWorth()
-      return Account.allAccounts
+      let userNetWorthToBeUpdated = User.findUser(to.userId);
+
+      this.updateNetWorth();
+      userNetWorthToBeUpdated.updateNetWorth();
+      return Account.allAccounts;
     } catch (error) {
       return error;
     }
   }
 
   /// get Transactions by date ///
-  getAccountTransactionsByDate(accountNumber, startDate, endDate){
+  getAccountTransactionsByDate(accountNumber, startDate, endDate) {
     try {
       if (this.isAdmin) {
         throw new UnauthorizedError("Not a User");
@@ -383,29 +386,28 @@ class User {
       if (typeof endDate != "string") {
         throw new ValidationError("Not a Valid from end Date");
       }
-      
+
       let [userAccount, fromIndex] = this.findUserAccount(accountNumber);
       if (userAccount == "") {
-        throw new UnauthorizedError("Not Authorized to get transactions of this Acc");
+        throw new UnauthorizedError(
+          "Not Authorized to get transactions of this Acc"
+        );
       }
-      let userPassbook = userAccount.passbook
+      let userPassbook = userAccount.passbook;
 
       if (startDate === "") {
-        startDate = "1/1/1800"
-        console.log(startDate)
+        startDate = "1/1/1800";
       }
       if (endDate === "") {
-        let temp = new Date()
-        endDate = temp.toLocaleDateString()
-        
+        let temp = new Date();
+        endDate = temp.toLocaleDateString();
       }
 
-      let filteredDate = userPassbook.filter((transaction)=>{
+      let filteredDate = userPassbook.filter((transaction) => {
         return transaction.date >= startDate && transaction.date <= endDate;
-      })
+      });
 
-      return filteredDate
-      
+      return filteredDate;
     } catch (error) {
       return error;
     }

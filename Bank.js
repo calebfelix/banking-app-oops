@@ -12,20 +12,20 @@ class Bank {
     this.bankName = bankName;
     this.abrivation = abrivation;
     this.accounts = [];
-    this.bankTotal = 0
+    this.bankTotal = 0;
   }
 
-  updateBankTotal(){
-    let total = 0
+  updateBankTotal() {
+    let total = 0;
     for (let index = 0; index < this.accounts.length; index++) {
-      total = total + this.accounts[index].AccountBalance
+      total = total + this.accounts[index].AccountBalance;
     }
-    this.bankTotal = total
-    return this.bankTotal
+    this.bankTotal = total;
+    return this.bankTotal;
   }
 
-  getBankTotal(){
-    return this.bankTotal
+  getBankTotal() {
+    return this.bankTotal;
   }
 
   static findBank(bankId) {
@@ -38,7 +38,7 @@ class Bank {
   }
 
   findBankAccount(accountNumber) {
-    for (let index = 0; index < this.accounts.length ; index++) {
+    for (let index = 0; index < this.accounts.length; index++) {
       if (accountNumber === this.accounts[index].accountNumber) {
         return this.accounts[index];
       }
@@ -56,12 +56,12 @@ class Bank {
 
   static updateBankName(bankId, newValue) {
     try {
-      let bankToBeUpdated = Bank.findBank(bankId);
+      let [bankToBeUpdated, bankToBeUpdatedIndex] = Bank.findBank(bankId);
       if (bankToBeUpdated == null) {
         throw new NotFoundError("User Not Found!");
       }
       bankToBeUpdated.bankName = newValue;
-      bankToBeUpdated.abrivation = Bank.abrivation(newValue)
+      bankToBeUpdated.abrivation = Bank.abrivation(newValue);
       return bankToBeUpdated;
     } catch (error) {
       throw error;
@@ -78,7 +78,7 @@ class Bank {
       Bank.allBanks.push(newBank);
       return newBank;
     } catch (error) {
-      throw error; // TODO;
+      throw error;
     }
   }
 }

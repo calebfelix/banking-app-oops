@@ -20,8 +20,8 @@ class Account {
   }
 
   getDate() {
-    let today = new Date()
-    return today.toLocaleDateString()
+    let today = new Date();
+    return today.toLocaleDateString();
     // return today
   }
 
